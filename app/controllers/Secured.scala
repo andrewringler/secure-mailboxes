@@ -8,6 +8,9 @@ trait Secured {
   val basicAuthUsername = Play.current.configuration.getString("basic.auth.username").get
   val basicAuthPassword = Play.current.configuration.getString("basic.auth.password").get
 
+  // see https://gist.github.com/guillaumebort/2328236
+  // for another cleaner? alternative
+  
   private def username(request: RequestHeader): Option[String] = {
     request.headers.get("Authorization").flatMap { authorization =>
       authorization.split(" ").drop(1).headOption.flatMap { encoded =>
