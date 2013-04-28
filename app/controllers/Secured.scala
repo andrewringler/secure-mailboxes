@@ -12,7 +12,7 @@ trait Secured {
     request.headers.get("Authorization").flatMap { authorization =>
       authorization.split(" ").drop(1).headOption.flatMap { encoded =>
         new String(decodeBase64(encoded.getBytes)).split(":").toList match {
-          case username :: password :: Nil if (username == basicAuthPassword && password == basicAuthPassword) => Some(username)
+          case username :: password :: Nil if (username == basicAuthUsername && password == basicAuthPassword) => Some(username)
           case _ => None
         }
       }
