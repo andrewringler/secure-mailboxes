@@ -3,49 +3,53 @@
 @main("Secure Mailboxes Admin") {
     
 <script>
-  
-    /* Create the Client with a Capability Token */
     Twilio.Device.setup("@twilioAuthToken", {debug: true});
  
-    /* Let us know when the client is ready. */
-    Twilio.Device.ready(function (device) {
-        $("#log").text("Ready");
+    $("#call").click(function() {  
+        Twilio.Device.connect();
+    });
+    $("#hangup").click(function() {  
+        connection.sendDigits("#");
     });
  
-    /* Report any errors on the screen */
+    Twilio.Device.ready(function (device) {
+        $('#status').text('Ready to start recording');
+    });
+ 
+    Twilio.Device.offline(function (device) {
+        $('#status').text('Offline');
+    });
+ 
     Twilio.Device.error(function (error) {
-        $("#log").text("Error: " + error.message);
+        $('#status').text(error);
     });
  
     Twilio.Device.connect(function (conn) {
-        $("#log").text("Successfully established call");
+        connection=conn;
+        $('#status').text("On Air");
+        $('#status').css('color', 'red');
+        toggleCallStatus();
     });
  
-    /* Log a message when a call disconnects. */
     Twilio.Device.disconnect(function (conn) {
-        $("#log").text("Call ended");
+        $('#status').html('Recording ended<br/><a href="show_recordings.php">view recording list</a>');
+        $('#status').css('color', 'black');
+        toggleCallStatus();
     });
-    
-    /* Connect to Twilio when we call this function. */
-    function call() {
-        Twilio.Device.connect({
-        	  type: "secure_patient_message",
-        	  patient_id: "4158675309"
-        });
-    }
-    /* A function to end a connection to Twilio. */
-    function hangup() {
-        Twilio.Device.disconnectAll();
+     
+    function toggleCallStatus(){
+        $('#call').toggle();
+        $('#hangup').toggle();
     }
 </script>
     
-<button class="call" onclick="call();">
-	Call
-</button>
-  
-<button class="hangup" onclick="hangup();">
-    Hangup
-</button>  
+<h3>Create a Recording</h3>
+
+<input type="button" id="call" value="Begin Recording"/>
+<input type="button" id="hangup" value="Stop Recording" style="display:none;"/>
+<div id="status">
+   	Offline
+</div>  
   
 <div id="log">Loading pigeons...</div>    
     
